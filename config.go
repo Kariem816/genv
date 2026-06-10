@@ -9,7 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type TransformerFn func(string, string) (any, error)
+type TransformerFn func(varName string, varStrVal string) (any, error)
 type varMode int
 
 const (
