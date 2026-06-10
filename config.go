@@ -167,6 +167,10 @@ func Parse[T any](Cfg *T) error {
 			if f.Type != reflect.TypeOf(val) {
 				return fmt.Errorf("GENV: field `%s` transformer returned type %T, expected %s", name, val, f.Type.Name())
 			}
+		} else {
+			if f.Type.Kind() != reflect.String {
+				return fmt.Errorf("GENV: field `%s` is of type %s, expected string or a transformer", name, f.Type.Name())
+			}
 		}
 
 		if ok { // some variables might not be needed in some environments
