@@ -39,14 +39,14 @@ go get github.com/kariem816/genv
 
 ```go
 type TEnv struct {
-    Origin      string `env:"ORIGIN;b"`
-    DatabaseUrl string `env:"DATABASE_URL;b"`
-    SaltRounds  int    `env:"SALT_ROUNDS;b;toInt"`
+    Origin      string `genv:"ORIGIN;b"`
+    DatabaseUrl string `genv:"DATABASE_URL;b"`
+    SaltRounds  int    `genv:"SALT_ROUNDS;b;toInt"`
 
-    JwtPublicKey  string `env:"JWT_PUBLIC_KEY;b"`
-    JwtPrivateKey string `env:"JWT_PRIVATE_KEY;b"`
+    JwtPublicKey  string `genv:"JWT_PUBLIC_KEY;b"`
+    JwtPrivateKey string `genv:"JWT_PRIVATE_KEY;b"`
 
-    CsrfSecret []byte `env:"CSRF_SECRET;b;b64Bytes"`
+    CsrfSecret []byte `genv:"CSRF_SECRET;b;b64Bytes"`
 }
 ```
 
@@ -118,7 +118,7 @@ func main() {
 ## Struct Tag Format
 
 ```
-env:"VAR_NAME;mode[;transformer]"
+genv:"VAR_NAME;mode[;transformer]"
 ```
 
 | Segment       | Description                                               |
@@ -131,16 +131,16 @@ env:"VAR_NAME;mode[;transformer]"
 
 ```go
 // Required in all environments, parsed as a raw string
-Origin string `env:"ORIGIN;b"`
+Origin string `genv:"ORIGIN;b"`
 
 // Required in all environments, transformed to int
-SaltRounds int `env:"SALT_ROUNDS;b;toInt"`
+SaltRounds int `genv:"SALT_ROUNDS;b;toInt"`
 
 // Dev-only variable
-DebugToken string `env:"DEBUG_TOKEN;d"`
+DebugToken string `genv:"DEBUG_TOKEN;d"`
 
 // Prod-only variable, decoded from base64 to []byte
-CsrfSecret []byte `env:"CSRF_SECRET;p;b64Bytes"`
+CsrfSecret []byte `genv:"CSRF_SECRET;p;b64Bytes"`
 ```
 
 ---

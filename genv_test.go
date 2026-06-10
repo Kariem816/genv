@@ -16,7 +16,7 @@ func Test_Genv(t *testing.T) {
 	t.Run("Returns error when Parse receives nil pointer", func(t *testing.T) {
 		setEnv(t, "ADDR", ":8080")
 		var ptr *struct {
-			Addr string `env:"ADDR;b"`
+			Addr string `genv:"ADDR;b"`
 		}
 		err := genv.Parse(ptr)
 		if err == nil {
@@ -27,7 +27,7 @@ func Test_Genv(t *testing.T) {
 	t.Run("Returns error when transformer result type does not match field type", func(t *testing.T) {
 		setEnv(t, "PORT", "8080")
 		type Config struct {
-			Port int `env:"PORT;b;toInt"`
+			Port int `genv:"PORT;b;toInt"`
 		}
 		genv.RegisterTransformer("toInt", func(n, s string) (any, error) {
 			return s, nil // Incorrectly returns string instead of int
@@ -41,7 +41,7 @@ func Test_Genv(t *testing.T) {
 	t.Run("Errors on untagged struct fields", func(t *testing.T) {
 		setEnv(t, "ADDR", ":8080")
 		type Config struct {
-			Addr string `env:"ADDR;b"`
+			Addr string `genv:"ADDR;b"`
 			Name string
 		}
 		err := genv.Parse(&Config{})
@@ -72,10 +72,10 @@ func Test_Genv(t *testing.T) {
 		setEnv(t, "ADDR", addr)
 		setEnv(t, "DATABASE_URL", dbURL)
 		type Embedded1 struct {
-			Addr string `env:"ADDR;b"`
+			Addr string `genv:"ADDR;b"`
 		}
 		type Embedded2 struct {
-			DatabaseURL string `env:"DATABASE_URL;b"`
+			DatabaseURL string `genv:"DATABASE_URL;b"`
 		}
 		type Config struct {
 			Embedded1
@@ -101,10 +101,10 @@ func Test_Genv(t *testing.T) {
 		setEnv(t, "ADDR", addr)
 		setEnv(t, "DATABASE_URL", dbURL)
 		type Embedded1 struct {
-			Addr string `env:"ADDR;b"`
+			Addr string `genv:"ADDR;b"`
 		}
 		type Embedded2 struct {
-			DatabaseURL string `env:"DATABASE_URL;b"`
+			DatabaseURL string `genv:"DATABASE_URL;b"`
 		}
 		type Embedded3 struct {
 			Embedded1
@@ -130,7 +130,7 @@ func Test_Genv(t *testing.T) {
 	t.Run("Expect non string fields to have transformers", func(t *testing.T) {
 		setEnv(t, "PORT", "8080")
 		type Config struct {
-			Port int `env:"PORT;b"`
+			Port int `genv:"PORT;b"`
 		}
 		err := genv.Parse(&Config{})
 		if err == nil {
@@ -141,7 +141,7 @@ func Test_Genv(t *testing.T) {
 	t.Run("Expect transformer fields to return correct type", func(t *testing.T) {
 		setEnv(t, "PORT", "8080")
 		type Config struct {
-			Port int `env:"PORT;b;toInt"`
+			Port int `genv:"PORT;b;toInt"`
 		}
 		genv.RegisterTransformer("toInt", func(n, s string) (any, error) {
 			return s, nil // Incorrectly returns string instead of int

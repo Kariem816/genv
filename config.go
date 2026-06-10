@@ -51,7 +51,7 @@ func setFieldByName(obj any, fieldName string, value any) error {
 
 func readConfig(f reflect.StructField) (configVar, error) {
 	fName := f.Name
-	tag, ok := f.Tag.Lookup("env")
+	tag, ok := f.Tag.Lookup("genv")
 	if !ok {
 		return configVar{}, fmt.Errorf("GENV: field `%s` is not configured", fName)
 	}
