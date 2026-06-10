@@ -65,7 +65,7 @@ func readConfig(f reflect.StructField) (configVar, error) {
 
 	key := strings.TrimSpace(pieces[0])
 	if len(key) == 0 {
-		return configVar{}, fmt.Errorf("GENV: field `%s` key is not optional", fName)
+		return configVar{}, fmt.Errorf("GENV: field `%s` config should specify a key", fName)
 	}
 	cv.Key = key
 
@@ -144,14 +144,29 @@ func IsProd() bool {
 	return env == envProd
 }
 
+func collectFields(typ reflect.Type) []reflect.StructField {
+	fields := []reflect.StructField{}
+
+	for f := range typ.Fields() {
+		if f.Anonymous && f.Type.Kind() == reflect.Struct {
+			fmt.Printf("[Info] GENV: collecting fields from embedded struct `%s` in struct `%s`\n", f.Type.Name(), typ.Name())
+			fields = append(fields, collectFields(f.Type)...)
+		} else {
+			fields = append(fields, f)
+		}
+	}
+
+	return fields
+}
+
 func Parse[T any](Cfg *T) error {
 	typ := reflect.TypeFor[T]()
 	if typ.Kind() != reflect.Struct {
 		return fmt.Errorf("GENV: expected a struct type but got %s", typ.Kind())
 	}
 
-	for i := range typ.NumField() {
-		f := typ.Field(i)
+	fields := collectFields(typ)
+	for _, f := range fields {
 		name := f.Name
 
 		cv, err := readConfig(f)
