@@ -126,4 +126,29 @@ func Test_Genv(t *testing.T) {
 			t.Errorf("Expected DatabaseURL to be `%s`, got `%s`", dbURL, cfg.DatabaseURL)
 		}
 	})
+
+	t.Run("Expect non string fields to have transformers", func(t *testing.T) {
+		setEnv(t, "PORT", "8080")
+		type Config struct {
+			Port int `env:"PORT;b"`
+		}
+		err := genv.Parse(&Config{})
+		if err == nil {
+			t.Error("Expected error when non string field does not have transformer, got nil")
+		}
+	})
+
+	t.Run("Expect transformer fields to return correct type", func(t *testing.T) {
+		setEnv(t, "PORT", "8080")
+		type Config struct {
+			Port int `env:"PORT;b;toInt"`
+		}
+		genv.RegisterTransformer("toInt", func(n, s string) (any, error) {
+			return s, nil // Incorrectly returns string instead of int
+		})
+		err := genv.Parse(&Config{})
+		if err == nil {
+			t.Error("Expected error when transformer does not return correct type, got nil")
+		}
+	})
 }
